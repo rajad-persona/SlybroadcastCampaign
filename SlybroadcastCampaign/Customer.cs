@@ -15,5 +15,6 @@ namespace SlybroadcastCampaign
         public string MOBILE { get; set; }
         public string CUST_SHIP_COUNTRY_CODE { get; set; }
         public string Message { get; set; }
+        public string Campaign_Name { get; set; }
     }
 }

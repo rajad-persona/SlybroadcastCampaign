@@ -26,11 +26,11 @@ namespace SlybroadcastCampaign
                     data.Add("c_date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
                     data.Add("c_record_audio", camp.Key);
                     data.Add("c_phone", string.Join(",", camp.Select(i => i.MOBILE).Where(i => !string.IsNullOrEmpty(i))));
-                    data.Add("c_callerID", "4252000970");
-                    data.Add("c_uid", "BreanneS@PersonaNutrition.com");
-                    data.Add("c_password", "Persona1!");
-                    data.Add("mobile_only", "0");
-                    data.Add("c_title", "campaign from API batchjob");
+                    data.Add("c_callerID", ConfigurationManager.AppSettings["c_callerID"]);
+                    data.Add("c_uid", ConfigurationManager.AppSettings["c_uid"]);
+                    data.Add("c_password", ConfigurationManager.AppSettings["c_password"]);
+                    data.Add("mobile_only", ConfigurationManager.AppSettings["mobile_only"]);
+                    data.Add("c_title", camp.FirstOrDefault().Campaign_Name);
 
                     var resp = CreateCampaign(data).GetAwaiter().GetResult();
                 }

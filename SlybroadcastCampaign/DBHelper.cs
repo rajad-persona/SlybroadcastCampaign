@@ -22,12 +22,13 @@ namespace SlybroadcastCampaign
             var resp = table.AsEnumerable().Select(row => new Customer
             {
                 CUSTOMER_ID = Convert.ToInt64(row["CUSTOMER_ID"]),
-                CUST_SHIP_COUNTRY_CODE = row["CUST_SHIP_COUNTRY_CODE"].ToString(),
-                EMAIL = row["EMAIL"].ToString(),
-                FIRST_NAME = row["FIRST_NAME"].ToString(),
-                LAST_NAME = row["LAST_NAME"].ToString(),
-                Message = row["Message"].ToString(),
-                MOBILE = row["MOBILE"].ToString()
+                CUST_SHIP_COUNTRY_CODE = row["CUST_SHIP_COUNTRY_CODE"]?.ToString(),
+                EMAIL = row["EMAIL"]?.ToString(),
+                FIRST_NAME = row["FIRST_NAME"]?.ToString(),
+                LAST_NAME = row["LAST_NAME"]?.ToString(),
+                Message = row["Message"]?.ToString(),
+                MOBILE = row["MOBILE"]?.ToString(),
+                Campaign_Name=row["Campaign_Name"]?.ToString()
             }).ToList();
             return resp;
         }
