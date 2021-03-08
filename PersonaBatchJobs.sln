@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlybroadcastCampaign", "SlybroadcastCampaign\SlybroadcastCampaign.csproj", "{99E48C71-B7F1-4A92-88DD-23FCFA215D5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttentiveAPI", "AttentiveAPI\AttentiveAPI.csproj", "{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{99E48C71-B7F1-4A92-88DD-23FCFA215D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99E48C71-B7F1-4A92-88DD-23FCFA215D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99E48C71-B7F1-4A92-88DD-23FCFA215D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -12,8 +13,12 @@ namespace SlybroadcastCampaign
     class Program
     {
         private static readonly HttpClient client = new HttpClient();
+        private static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static void Main(string[] args)
         {
+            LogConfigure();
+            Logger.InfoFormat("-------------------------------------------------------------");
+            Logger.InfoFormat("Batch Job started");
             var dbHelper = new DBHelper();
             var customer = dbHelper.GetCustomers();
             if (customer != null && customer.Any())
@@ -33,22 +38,39 @@ namespace SlybroadcastCampaign
                     data.Add("c_title", camp.FirstOrDefault().Campaign_Name);
 
                     var resp = CreateCampaign(data).GetAwaiter().GetResult();
-                }
-            }
-        }
-
-        private static async Task<string> CreateCampaign(Dictionary<string, string> data)
-        {
-            if (ConfigurationManager.AppSettings["createCampaigns"] == "true")
-            {
-                using (HttpContent formContent = new FormUrlEncodedContent(data))
-                {
-                    using (HttpResponseMessage response = await client.PostAsync("https://www.mobile-sphere.com/gateway/vmb.php", formContent).ConfigureAwait(false))
+                    if (!string.IsNullOrEmpty(resp))
                     {
-                        response.EnsureSuccessStatusCode();
-                        return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key);
                     }
                 }
+            }
+            Logger.InfoFormat("-------------------------------------------------------------");
+            Logger.InfoFormat("Batch Job ended");
+        }
+        internal static void LogConfigure()
+        {
+            log4net.Config.BasicConfigurator.Configure();
+            ILog log = log4net.LogManager.GetLogger(typeof(Program));
+        }
+        private static async Task<string> CreateCampaign(Dictionary<string, string> data)
+        {
+            try
+            {
+                if (ConfigurationManager.AppSettings["createCampaigns"] == "true")
+                {
+                    using (HttpContent formContent = new FormUrlEncodedContent(data))
+                    {
+                        using (HttpResponseMessage response = await client.PostAsync("https://www.mobile-sphere.com/gateway/vmb.php", formContent).ConfigureAwait(false))
+                        {
+                            response.EnsureSuccessStatusCode();
+                            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.Error("Error in SLY api call", ex);
             }
             return null;
         }
