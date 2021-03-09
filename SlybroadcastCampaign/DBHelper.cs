@@ -9,6 +9,22 @@ namespace SlybroadcastCampaign
 {
     public class DBHelper
     {
+        public List<string> GetSlyCampaigns()
+        {
+            DataTable table = new DataTable();
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconnection"].ConnectionString))
+            using (var cmd = new SqlCommand("USP_GET_SLYBROADCAST_SESSIONID", con))
+            using (var da = new SqlDataAdapter(cmd))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                da.Fill(table);
+            }
+            var resp = table.AsEnumerable().Select(row =>
+                row["Session_id"]?.ToString()?.Trim()
+            ).ToList();
+            return resp;
+        }
+
         public List<Customer> GetCustomers()
         {
             DataTable table = new DataTable();
@@ -54,7 +70,7 @@ namespace SlybroadcastCampaign
 
         }
 
-        public bool AddLog(string campaignResponse, string campaignName, string message)
+        public bool AddLog(string campaignResponse, string campaignName, string message, string SESSION_ID, string CAMPAIGN_RESULT)
         {
             try
             {
@@ -70,6 +86,10 @@ namespace SlybroadcastCampaign
                         cmd.Parameters["@CAMPAIGN_NAME"].Value = campaignName;
                         cmd.Parameters.Add(new SqlParameter("@VOICE_MESSAGE", SqlDbType.NVarChar));
                         cmd.Parameters["@VOICE_MESSAGE"].Value = message;
+                        cmd.Parameters.Add(new SqlParameter("@SESSION_ID", SqlDbType.NVarChar));
+                        cmd.Parameters["@SESSION_ID"].Value = SESSION_ID;
+                        cmd.Parameters.Add(new SqlParameter("@CAMPAIGN_RESULT", SqlDbType.NVarChar));
+                        cmd.Parameters["@CAMPAIGN_RESULT"].Value = CAMPAIGN_RESULT;
                         cmd.ExecuteNonQuery();
                     }
                 }

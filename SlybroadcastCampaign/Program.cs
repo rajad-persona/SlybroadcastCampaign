@@ -17,8 +17,48 @@ namespace SlybroadcastCampaign
         static void Main(string[] args)
         {
             LogConfigure();
+            if (args.Any() && args[0] == "1") {
+                GetSlyReposne();
+            }
+            else
+                RunCampaigns();
+        }
+        private static void GetSlyReposne()
+        {
             Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("Batch Job started");
+            Logger.InfoFormat("SLY response Batch Job started");
+            try
+            {
+                var dbHelper = new DBHelper();
+                var campaigns = dbHelper.GetSlyCampaigns();
+                if (campaigns != null && campaigns.Any())
+                {
+                    foreach (var camp in campaigns)
+                    {
+                        var data = new Dictionary<string, string>();
+                        data.Add("c_uid", ConfigurationManager.AppSettings["c_uid"]);
+                        data.Add("c_password", ConfigurationManager.AppSettings["c_password"]);
+                        data.Add("c_option", "campaign_result");
+                        data.Add("session_id", camp);
+                        var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
+                        if (!string.IsNullOrEmpty(resp))
+                        {
+                            dbHelper.AddLog(null,null,null,camp, resp);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.Error("Error in SLY batch job", ex);
+            }
+            Logger.InfoFormat("-------------------------------------------------------------");
+            Logger.InfoFormat("SLY Batch Job ended");
+        }
+        private static void RunCampaigns()
+        {
+            Logger.InfoFormat("-------------------------------------------------------------");
+            Logger.InfoFormat("Campaign Batch Job started");
             var dbHelper = new DBHelper();
             var customer = dbHelper.GetCustomers();
             if (customer != null && customer.Any())
@@ -37,22 +77,22 @@ namespace SlybroadcastCampaign
                     data.Add("mobile_only", ConfigurationManager.AppSettings["mobile_only"]);
                     data.Add("c_title", camp.FirstOrDefault().Campaign_Name);
 
-                    var resp = CreateCampaign(data).GetAwaiter().GetResult();
+                    var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
                     if (!string.IsNullOrEmpty(resp))
                     {
-                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key);
+                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key,null,null);
                     }
                 }
             }
             Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("Batch Job ended");
+            Logger.InfoFormat("Campaign Batch Job ended");
         }
         internal static void LogConfigure()
         {
             log4net.Config.BasicConfigurator.Configure();
             ILog log = log4net.LogManager.GetLogger(typeof(Program));
         }
-        private static async Task<string> CreateCampaign(Dictionary<string, string> data)
+        private static async Task<string> SlyAPITrigger(Dictionary<string, string> data)
         {
             try
             {
@@ -68,7 +108,7 @@ namespace SlybroadcastCampaign
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error("Error in SLY api call", ex);
             }
