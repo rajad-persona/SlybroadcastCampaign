@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlybroadcastCampaign", "Sly
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttentiveAPI", "AttentiveAPI\AttentiveAPI.csproj", "{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttentiveSftpWeekly", "AttentiveSftpWeekly\AttentiveSftpWeekly.csproj", "{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{1DC6CF30-6771-42E7-AED6-20E5098C0312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21427D2C-3E8C-49DD-A026-7C08A55EBA4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
