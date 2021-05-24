@@ -14,5 +14,8 @@ namespace Utilities
                                                     original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
                                                     and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
 													and braze_date_added  >= DATEADD(HH, -1, GETDATE());";
+        public const string WunderKind_get_History = @"select [FileName] from [TBL_WUNDERKIND_SUBSCRIBERS_BATCHJOB_LOG]";
+
+
     }
 }

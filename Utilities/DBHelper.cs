@@ -136,5 +136,76 @@ namespace Utilities
         }
 
 
+        public static bool Insert(DataTable datas, string table)
+        {
+            bool result = false;
+            if (datas != null && datas.Rows.Count > 0)
+            {
+                List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
+                var xQry = "";
+                using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconnection"].ConnectionString))
+                    try
+                    {
+                        con.Open();
+                        foreach (DataRow dtRow in datas.Rows)
+                        {
+                            values.Clear();
+                            // On all tables' columns
+                            foreach (DataColumn dc in datas.Columns)
+                            {
+
+                                values.Add(new KeyValuePair<string, string>(dc.ColumnName, dtRow[dc].ToString()));
+                            }
+                            xQry = xQry + getInsertCommand(table, values);
+
+                        }
+                        SqlCommand cmdi = new SqlCommand(xQry, con);
+                        cmdi.ExecuteNonQuery();
+                        result = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+            }
+            return result;
+        }
+
+
+        private static string getInsertCommand(string table, List<KeyValuePair<string, string>> values)
+        {
+            string query = null;
+            query += "INSERT INTO " + table + " ( ";
+            foreach (var item in values)
+            {
+                query += item.Key;
+                query += ", ";
+            }
+            query = query.Remove(query.Length - 2, 2);
+            query += ") VALUES ( ";
+            foreach (var item in values)
+            {
+                if (item.Key.GetType().Name == "System.Int") // or any other numerics
+                {
+                    query += item.Value;
+                }
+                else
+                {
+                    query += "'";
+                    query += item.Value;
+                    query += "'";
+                }
+                query += ", ";
+            }
+            query = query.Remove(query.Length - 2, 2);
+            query += ");";
+            return query;
+        }
+
+
     }
 }

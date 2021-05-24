@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,5 +28,21 @@ namespace Utilities
             }
             return Encoding.GetEncoding("iso-8859-1").GetBytes(result.ToString());
         }
+
+
+      public  static DataTable ConvertListToDataTable(this List<string> data,string columnName)
+        {
+            DataTable dtTable = new DataTable();
+
+            dtTable.Columns.Add(columnName, typeof(string));
+
+            foreach (var row in data)
+            {
+                dtTable.Rows.Add(row);
+            }
+
+            return dtTable;
+        }
+
     }
 }
