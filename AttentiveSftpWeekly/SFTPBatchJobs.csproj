@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8B68EF0C-99E2-4024-87DB-CDD8FA7AEA95}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AttentiveSftpWeekly</RootNamespace>
-    <AssemblyName>AttentiveSftpWeekly</AssemblyName>
+    <RootNamespace>SFTPBatchJobs</RootNamespace>
+    <AssemblyName>SFTPBatchJobs</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

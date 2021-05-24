@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,10 +11,10 @@ namespace Utilities
     {
         public static void FileUploadSFTP(System.Data.DataTable data, string fileName)
         {
-            var host = "sftp.attentivemobile.com";
+            var host = ConfigurationManager.AppSettings["sftphost"];
             var port = 22;
-            var username = "persona";
-            var password = "mmiUwuFVv3Fq&dcfViTsPWoD";
+            var username = ConfigurationManager.AppSettings["sftpusername"];
+            var password = ConfigurationManager.AppSettings["sftppassword"];
 
             byte[] csvFile = data.ToCSV(); // Function returns byte[] csv file
 
@@ -26,7 +27,10 @@ namespace Utilities
                     using (var ms = new System.IO.MemoryStream(csvFile))
                     {
                         //client.BufferSize = (uint)ms.Length; // bypass Payload error large files
-                        client.UploadFile(ms, "/uploads/"+fileName);
+                        if (ConfigurationManager.AppSettings["sftpFolder"] == null)
+                            client.UploadFile(ms, $"{fileName}");
+                        else
+                            client.UploadFile(ms, $"/{ConfigurationManager.AppSettings["sftpFolder"]}/{fileName}");
                     }
                 }
                 else

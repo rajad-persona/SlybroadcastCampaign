@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="DBHelper.cs" />
     <Compile Include="DTO\Customer.cs" />
     <Compile Include="Extensions.cs" />

@@ -100,5 +100,41 @@ namespace Utilities
             }
             return false;
         }
+
+        public DataSet GetAttentiveWeeklyData()
+        {
+            DataSet ds = new DataSet();
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconnection"].ConnectionString))
+            using (var cmd = new SqlCommand("USP_GET_ATTENTIVE_WEEKLY_DATA", con))
+            using (var da = new SqlDataAdapter(cmd))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                da.Fill(ds);
+            }
+            return ds;
+        }
+
+        public DataSet GetDataSet(string query, bool isStroedproc = true, int? timeOut = null)
+        {
+            DataSet ds = new DataSet();
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconnection"].ConnectionString))
+            using (var cmd = new SqlCommand(query, con))
+            using (var da = new SqlDataAdapter(cmd))
+            {
+                if (isStroedproc)
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                }
+                if (timeOut != null)
+                {
+                    cmd.CommandTimeout = timeOut ?? 30;
+                }
+
+                da.Fill(ds);
+            }
+            return ds;
+        }
+
+
     }
 }
