@@ -17,5 +17,12 @@ namespace Utilities
         public const string WunderKind_get_History = @"select [FileName] from [TBL_WUNDERKIND_SUBSCRIBERS_BATCHJOB_LOG]";
 
 
+        public const string WunderKind_bulk_insert = @"Declare @distinctEmails as table (Email nvarchar(50)) 
+                                                        insert into @distinctEmails
+                                                        select [Name] from [dbo].[splitstring]('{0}','|') as t
+                                                        where t.Name not in (select Email from TBL_WUNDERKIND_SUBSCRIBERS)
+                                                        insert into TBL_WUNDERKIND_SUBSCRIBERS(Email) select * from @distinctEmails
+                                                        select ID,Email from TBL_WUNDERKIND_SUBSCRIBERS where Email in (select * from @distinctEmails)";
+
     }
 }

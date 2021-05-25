@@ -136,7 +136,7 @@ namespace Utilities
         }
 
 
-        public static bool Insert(DataTable datas, string table)
+        public bool Insert(DataTable datas, string table)
         {
             bool result = false;
             if (datas != null && datas.Rows.Count > 0)
