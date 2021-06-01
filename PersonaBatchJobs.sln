@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFTPBatchJobs", "AttentiveS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{1DC6CF30-6771-42E7-AED6-20E5098C0312}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WunderkindSFTPUnsubscribersDaily", "WunderkindSFTPUnsubscribersDaily\WunderkindSFTPUnsubscribersDaily.csproj", "{A8FCAE61-7EB5-4500-A3AF-8865662CFE2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DC6CF30-6771-42E7-AED6-20E5098C0312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8FCAE61-7EB5-4500-A3AF-8865662CFE2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8FCAE61-7EB5-4500-A3AF-8865662CFE2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8FCAE61-7EB5-4500-A3AF-8865662CFE2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8FCAE61-7EB5-4500-A3AF-8865662CFE2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
