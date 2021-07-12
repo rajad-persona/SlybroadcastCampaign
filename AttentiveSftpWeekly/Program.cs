@@ -31,9 +31,16 @@ namespace SFTPBatchJobs
                 else if (ConfigurationManager.AppSettings["sftphost"]?.ToLower()?.Contains("40.86.85.18") ?? false)
                 {
                     var filedate = DateTime.Now.ToString("yyyyMMddHH");
-                    var dataset = dbHelper.GetDataSet(Constants.WunderKind_Hourly_Job, false);
+                    var dataset = dbHelper.GetDataSet(Constants.Persona_Sub_Hourly_Job, false);
+                    var brazeData = new BrazeUser
+                    {
+                        Attributes = new List<Utilities.Attribute>()
+                    };
                     if (dataset.Tables[0].Rows.Count > 0)
+                    {
                         SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_Subscribers_{filedate}.csv");
+                        brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "pn"));
+                    }
 
                     if (ConfigurationManager.AppSettings["BrazeApiKey"] != null)
                     {
@@ -45,12 +52,15 @@ namespace SFTPBatchJobs
                         var emails = SFTPHelper.GetWunderKindSFTPFiles(wunderKindHistory, out processedFiles);
 
                         dbHelper.Insert(processedFiles.ConvertListToDataTable("FileName"), "TBL_WUNDERKIND_SUBSCRIBERS_BATCHJOB_LOG");
-                        var brazeData = new BrazeUser
+                        dataset = dbHelper.GetDataSet(string.Format(Constants.WunderKind_bulk_insert, string.Join("|", emails)), false);
+                       
+                        if (dataset.Tables[0].Rows.Count > 0)
                         {
-                            Attributes = dbHelper.GetDataSet(string.Format(Constants.WunderKind_bulk_insert, string.Join("|", emails)), false).Tables[0].ConvertToList<Utilities.Attribute>()
-                        };
+                            brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "wk"));
+                        }
+                        
                         if (brazeData != null && brazeData.Attributes.Any())
-                            AddUserstoBraze(brazeData).GetAwaiter().GetResult();
+                            SFTPHelper.AddUserstoBraze(brazeData).GetAwaiter().GetResult();
                     }
                 }
             }
@@ -63,29 +73,5 @@ namespace SFTPBatchJobs
 
 
 
-
-        private static async Task<string> AddUserstoBraze(BrazeUser data)
-        {
-            LogHelper.Log("AddUserstoBraze started");
-            try
-            {
-                var client = new HttpClient();
-                var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ConfigurationManager.AppSettings["BrazeApiKey"]}");
-                using (var response = await client.PostAsync("https://rest.iad-02.braze.com/users/track", content).ConfigureAwait(false))
-                {
-                    response.EnsureSuccessStatusCode();
-                    var repsponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    return repsponse;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex,"Error AddUserstoBraze ended");
-
-            }
-            LogHelper.Log("AddUserstoBraze ended");
-            return null;
-        }
     }
 }

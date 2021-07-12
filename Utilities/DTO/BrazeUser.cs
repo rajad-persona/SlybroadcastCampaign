@@ -12,11 +12,23 @@ namespace Utilities
         [JsonIgnore()]
         public long ID { get; set; }
 
+        [JsonIgnore()]
+        public string CustomerCategory { get; set; }
+
         [JsonProperty("external_id")]
-        public string ExternalId { get { return "wk" + ID.ToString(); } set { } }
+        public string ExternalId { get; set; }
+
+        [JsonProperty("Filters")]
+        public string[] Filters { get; set; }
 
         [JsonProperty("email")]
         public string Email { get; set; }
+
+        [JsonProperty("email_subscribe")]
+        public string EmailSubscribe { get; set; }
+
+        [JsonProperty("push_subscribe")]
+        public string PushSubscribe { get; set; }
     }
 
     public class BrazeUser
@@ -24,5 +36,6 @@ namespace Utilities
         [JsonProperty("attributes")]
         public List<Attribute> Attributes { get; set; }
     }
+
 
 }

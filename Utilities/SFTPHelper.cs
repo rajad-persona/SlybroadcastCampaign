@@ -1,9 +1,12 @@
-﻿using Renci.SshNet;
+﻿using Newtonsoft.Json;
+using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,7 +43,28 @@ namespace Utilities
                 }
             }
         }
-
+        public static List<Attribute> GetBrazeAttributes(DataTable dataset, string type, bool isSubsribe = true)
+        {
+            var brazeAttributes = dataset.ConvertToList<Utilities.Attribute>();
+            foreach (var item in brazeAttributes)
+            {
+                item.ExternalId = type + item.ID.ToString();
+                if (string.IsNullOrEmpty(item.CustomerCategory))
+                {
+                    item.Filters = new string[1] { type.ToUpper() };
+                }
+                else
+                {
+                    item.Filters = new string[2] { item.CustomerCategory, type.ToUpper() };
+                }
+                item.EmailSubscribe = item.PushSubscribe = "unsubscribed";
+                if (isSubsribe)
+                {
+                    item.EmailSubscribe = item.PushSubscribe = "subscribed";
+                }
+            }
+            return brazeAttributes;
+        }
         public static List<string> GetWunderKindSFTPFiles(List<string> wunderKindHistory, out List<string> files)
         {
             var resp = new List<string>();
@@ -82,6 +106,43 @@ namespace Utilities
                 }
             }
             return resp;
+        }
+
+        public static IEnumerable<List<T>> SplitList<T>(this List<T> locations, int nSize = 49)
+        {
+            for (int i = 0; i < locations.Count; i += nSize)
+            {
+                yield return locations.GetRange(i, Math.Min(nSize, locations.Count - i));
+            }
+        }
+
+
+        public static async Task<string> AddUserstoBraze(BrazeUser data)
+        {
+            LogHelper.Log("AddUserstoBraze started");
+            try
+            {
+                var splitArray = data.Attributes.SplitList();
+                foreach (var item in splitArray)
+                {
+                    var apireq = new BrazeUser { Attributes = item };
+                    var client = new HttpClient();
+                    var content = new StringContent(JsonConvert.SerializeObject(apireq), Encoding.UTF8, "application/json");
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ConfigurationManager.AppSettings["BrazeApiKey"]}");
+                    using (var response = await client.PostAsync("https://rest.iad-02.braze.com/users/track", content).ConfigureAwait(false))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        var repsponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "Error AddUserstoBraze ended");
+
+            }
+            LogHelper.Log("AddUserstoBraze ended");
+            return null;
         }
     }
 }
