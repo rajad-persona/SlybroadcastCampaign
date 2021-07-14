@@ -12,14 +12,17 @@ namespace Utilities
         [JsonIgnore()]
         public long ID { get; set; }
 
-        [JsonIgnore()]
-        public string CustomerCategory { get; set; }
+        //[JsonIgnore()]
+        //public string CustomerCategory { get; set; }
 
         [JsonProperty("external_id")]
         public string ExternalId { get; set; }
 
-        [JsonProperty("Filters")]
-        public string[] Filters { get; set; }
+        [JsonProperty("customer_category")]
+        public string customer_category { get; set; }
+
+        [JsonProperty("customer_source")]
+        public string customer_source { get; set; }
 
         [JsonProperty("email")]
         public string Email { get; set; }

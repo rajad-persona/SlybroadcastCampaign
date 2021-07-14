@@ -9,16 +9,15 @@ namespace Utilities
     public static class Constants
     {
         public const string Attentive_weekly_Job = "USP_GET_ATTENTIVE_WEEKLY_DATA";
-        public const string Persona_Sub_Hourly_Job = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category CustomerCategory from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
+        public const string Persona_Sub_Hourly_Job = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
                                                     (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
                                                     original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
                                                     and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
-													and braze_date_added  >= DATEADD(HH, -1, GETDATE());";
-        public const string MarketPlace_Unsub_Daily_Job = @"SELECT c.CUSTOMER_ID ID,C.FIRST_NAME,c.LAST_NAME,c.EMAIL
-                                                            FROM BCENTRAL.DBO.TBL_CUSTOMER_LIST C WITH (NOLOCK) 
-                                                            WHERE EXISTS (SELECT CL.CUSTOMER_ID FROM BCENTRAL.DBO.VW_INVALID_CUSTOMERS CL WITH (NOLOCK) WHERE CL.CUSTOMER_ID= C.CUSTOMER_ID) 
-                                                            AND EXISTS ( SELECT DSE.CUSTOMER_ID FROM BCENTRAL.DBO.TBL_DO_NOT_SEND_EMAIL_LIST DSE WITH (NOLOCK) WHERE DSE.CUSTOMER_ID = C.CUSTOMER_ID ) 
-                                                            and c.UPDATED_DATE >= Getdate()-2 and c.UPDATED_DATE < Getdate()-1;";
+													and braze_date_added  >= DATEADD(DD, -1, GETDATE());";
+        public const string MarketPlace_Unsub_Daily_Job = @"select c.CUSTOMER_ID ID,C.FIRST_NAME,c.LAST_NAME,c.EMAIL,TL.CREATED_DATE
+                                                            FROM BCENTRAL.DBO.TBL_CUSTOMER_LIST C WITH (NOLOCK) JOIN TBL_DO_NOT_SEND_EMAIL_LIST TL on
+                                                            C.CUSTOMER_ID=TL.CUSTOMER_ID where TL.CREATED_DATE >= dateadd(day,datediff(day,1,GETDATE()),0)
+                                                            AND TL.CREATED_DATE < dateadd(day,datediff(day,0,GETDATE()),0);";
         public const string Persona_Unsub_Daily_Job = @";WITH CTE_GET_VALID_TRANSACTION_CUSTOMERS AS
                                                         (SELECT  CT.TRANSACTION_CUSTOMER_ID FROM TBL_CUSTOMER_TRANSACTION  CT WITH (NOLOCK)
                                                                WHERE (CT.TRANSACTION_STATUS IN ( 3, 5, 8 )  OR ( CT.TRANSACTION_STATUS = 6  AND ( CT.DOCKET_NUMBER IS NOT NULL  OR CT.SHIP_DATE IS NOT NULL ))))
@@ -35,7 +34,7 @@ namespace Utilities
         public const string WunderKind_bulk_insert = @"Declare @distinctEmails as table (Email nvarchar(50)) 
                                                         insert into @distinctEmails
                                                         select [Name] from [dbo].[splitstring]('{0}','|') as t
-                                                        where t.Name not in (select Email from TBL_WUNDERKIND_SUBSCRIBERS)
+                                                        where t.Name not in (select Email from TBL_WUNDERKIND_SUBSCRIBERS) and t.name not in (select email from TBL_BRAZE_CUSTOMER_DATA)
                                                         insert into TBL_WUNDERKIND_SUBSCRIBERS(Email) select * from @distinctEmails
                                                         select ID,Email from TBL_WUNDERKIND_SUBSCRIBERS where Email in (select * from @distinctEmails)";
 

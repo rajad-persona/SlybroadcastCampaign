@@ -49,19 +49,11 @@ namespace Utilities
             foreach (var item in brazeAttributes)
             {
                 item.ExternalId = type + item.ID.ToString();
-                if (string.IsNullOrEmpty(item.CustomerCategory))
+                if (string.IsNullOrEmpty(item.customer_source))
                 {
-                    item.Filters = new string[1] { type.ToUpper() };
+                    item.customer_source = type.ToUpper();
                 }
-                else
-                {
-                    item.Filters = new string[2] { item.CustomerCategory, type.ToUpper() };
-                }
-                item.EmailSubscribe = item.PushSubscribe = "unsubscribed";
-                if (isSubsribe)
-                {
-                    item.EmailSubscribe = item.PushSubscribe = "subscribed";
-                }
+                item.EmailSubscribe = item.PushSubscribe = isSubsribe ? "subscribed" : "unsubscribed";
             }
             return brazeAttributes;
         }
