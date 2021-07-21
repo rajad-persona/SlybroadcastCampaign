@@ -30,7 +30,7 @@ namespace SFTPBatchJobs
                 }
                 else if (ConfigurationManager.AppSettings["sftphost"]?.ToLower()?.Contains("40.86.85.18") ?? false)
                 {
-                    var filedate = DateTime.Now.ToString("yyyyMMddHH");
+                    var filedate = DateTime.Now.ToString("yyyyMMdd");
                     var dataset = dbHelper.GetDataSet(Constants.Persona_Sub_Hourly_Job, false);
                     var brazeData = new BrazeUser
                     {
@@ -53,12 +53,12 @@ namespace SFTPBatchJobs
 
                         dbHelper.Insert(processedFiles.ConvertListToDataTable("FileName"), "TBL_WUNDERKIND_SUBSCRIBERS_BATCHJOB_LOG");
                         dataset = dbHelper.GetDataSet(string.Format(Constants.WunderKind_bulk_insert, string.Join("|", emails)), false);
-                       
+
                         if (dataset.Tables[0].Rows.Count > 0)
                         {
                             brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "wk"));
                         }
-                        
+
                         if (brazeData != null && brazeData.Attributes.Any())
                             SFTPHelper.AddUserstoBraze(brazeData).GetAwaiter().GetResult();
                     }

@@ -13,7 +13,8 @@ namespace Utilities
                                                     (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
                                                     original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
                                                     and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
-													and braze_date_added  >= DATEADD(DD, -1, GETDATE());";
+													AND braze_date_added >= dateadd(day,datediff(day,1,GETDATE()),0)
+                                                            AND braze_date_added < dateadd(day,datediff(day,0,GETDATE()),0);";
         public const string MarketPlace_Unsub_Daily_Job = @"select c.CUSTOMER_ID ID,C.FIRST_NAME,c.LAST_NAME,c.EMAIL,TL.CREATED_DATE
                                                             FROM BCENTRAL.DBO.TBL_CUSTOMER_LIST C WITH (NOLOCK) JOIN TBL_DO_NOT_SEND_EMAIL_LIST TL on
                                                             C.CUSTOMER_ID=TL.CUSTOMER_ID where TL.CREATED_DATE >= dateadd(day,datediff(day,1,GETDATE()),0)
