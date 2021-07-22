@@ -9,12 +9,27 @@ namespace Utilities
     public static class Constants
     {
         public const string Attentive_weekly_Job = "USP_GET_ATTENTIVE_WEEKLY_DATA";
-        public const string Persona_Sub_Hourly_Job = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
+        public const string Persona_Purchase_Subscribers = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
                                                     (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
                                                     original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
                                                     and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
 													AND braze_date_added >= dateadd(day,datediff(day,1,GETDATE()),0)
-                                                            AND braze_date_added < dateadd(day,datediff(day,0,GETDATE()),0);";
+                                                            AND braze_date_added < dateadd(day,datediff(day,0,GETDATE()),0)
+															AND customer_category='Purchaser';";
+        public const string Persona_NonPurchase_Subscribers = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
+                                                    (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
+                                                    original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
+                                                    and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
+													AND braze_date_added >= dateadd(day,datediff(day,1,GETDATE()),0)
+                                                            AND braze_date_added < dateadd(day,datediff(day,0,GETDATE()),0)
+															AND customer_category='Non-Purchaser'";
+        public const string Persona_Paused_Subscribers = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
+                                                    (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
+                                                    original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )
+                                                    and original_customer_id not in (select distinct Customer_ID from TBL_DO_NOT_CALL_LIST where customer_id is not null)
+													AND braze_date_added >= dateadd(day,datediff(day,1,GETDATE()),0)
+                                                            AND braze_date_added < dateadd(day,datediff(day,0,GETDATE()),0)
+															AND customer_category='Paused'";
         public const string MarketPlace_Unsub_Daily_Job = @"select c.CUSTOMER_ID ID,C.FIRST_NAME,c.LAST_NAME,c.EMAIL,TL.CREATED_DATE
                                                             FROM BCENTRAL.DBO.TBL_CUSTOMER_LIST C WITH (NOLOCK) JOIN TBL_DO_NOT_SEND_EMAIL_LIST TL on
                                                             C.CUSTOMER_ID=TL.CUSTOMER_ID where TL.CREATED_DATE >= dateadd(day,datediff(day,1,GETDATE()),0)

@@ -31,17 +31,32 @@ namespace SFTPBatchJobs
                 else if (ConfigurationManager.AppSettings["sftphost"]?.ToLower()?.Contains("40.86.85.18") ?? false)
                 {
                     var filedate = DateTime.Now.ToString("yyyyMMdd");
-                    var dataset = dbHelper.GetDataSet(Constants.Persona_Sub_Hourly_Job, false);
                     var brazeData = new BrazeUser
                     {
                         Attributes = new List<Utilities.Attribute>()
                     };
+                    var dataset = dbHelper.GetDataSet(Constants.Persona_Purchase_Subscribers, false);
+                   
                     if (dataset.Tables[0].Rows.Count > 0)
                     {
-                        SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_Subscribers_{filedate}.csv");
+                        SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_Purchasers_{filedate}.csv");
+                        brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "pn"));
+                    }
+                    dataset = dbHelper.GetDataSet(Constants.Persona_NonPurchase_Subscribers, false);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_NonPurchasers_{filedate}.csv");
                         brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "pn"));
                     }
 
+                    dataset = dbHelper.GetDataSet(Constants.Persona_Paused_Subscribers, false);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_Paused_{filedate}.csv");
+                        brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "pn"));
+                    }
                     if (ConfigurationManager.AppSettings["BrazeApiKey"] != null)
                     {
                         var wunderKindHistory = dbHelper.GetDataSet(Constants.WunderKind_get_History, false).Tables[0].AsEnumerable()
