@@ -9,6 +9,10 @@ namespace Utilities
     public static class Constants
     {
         public const string Attentive_weekly_Job = "USP_GET_ATTENTIVE_WEEKLY_DATA";
+        public const string GDPR_DELETED = @"SELECT  CREATED_DATE,DBO.[UDF_U_C_INFO](C_INFO) AS DECRYPTED_EMAIL
+                                            FROM TBL_GDPR_CUSTOMER WHERE [DELETE] = 1
+                                            AND DELETED_DATE IS NOT NULL and C_INFO is not null and DELETED_DATE >= dateadd(day,datediff(day,1,GETDATE()),0)
+                                            AND DELETED_DATE < dateadd(day,datediff(day,0,GETDATE()),0)";
         public const string Persona_Purchase_Subscribers = @"select distinct original_customer_id ID,first_name,last_name,email,customer_category customer_category from [dbo].[TBL_BRAZE_CUSTOMER_DATA] where original_customer_id not in
                                                     (select distinct Customer_ID from TBL_DO_NOT_SEND_EMAIL_LIST where customer_id is not null ) and
                                                     original_customer_id not in (select distinct Customer_ID from VW_INVALID_CUSTOMERS where customer_id is not null )

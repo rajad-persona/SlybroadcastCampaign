@@ -42,6 +42,13 @@ namespace SFTPBatchJobs
                         SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_Purchasers_{filedate}.csv");
                         brazeData.Attributes.AddRange(SFTPHelper.GetBrazeAttributes(dataset.Tables[0], "pn"));
                     }
+
+                    dataset = dbHelper.GetDataSet(Constants.GDPR_DELETED, false);
+
+                    if (dataset.Tables[0].Rows.Count > 0)
+                    {
+                        SFTPHelper.FileUploadSFTP(dataset.Tables[0], $"Persona_GDPR_Deletes_{filedate}.csv");
+                    }
                     dataset = dbHelper.GetDataSet(Constants.Persona_NonPurchase_Subscribers, false);
 
                     if (dataset.Tables[0].Rows.Count > 0)
