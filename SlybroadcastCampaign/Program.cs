@@ -17,7 +17,8 @@ namespace SlybroadcastCampaign
         static void Main(string[] args)
         {
             LogConfigure();
-            if (args.Any() && args[0] == "1") {
+            if (args.Any() && args[0] == "1")
+            {
                 GetSlyReposne();
             }
             else
@@ -43,12 +44,12 @@ namespace SlybroadcastCampaign
                         var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
                         if (!string.IsNullOrEmpty(resp))
                         {
-                            dbHelper.AddLog(null,null,null,camp, resp);
+                            dbHelper.AddLog(null, null, null, camp, resp);
                         }
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error("Error in SLY batch job", ex);
             }
@@ -64,13 +65,14 @@ namespace SlybroadcastCampaign
             if (customer != null && customer.Any())
             {
                 var campaigns = customer.GroupBy(i => i.Message);
+                var excludeList = ConfigurationManager.AppSettings["exclude_list"].Split(',');
                 foreach (var camp in campaigns)
                 {
                     var data = new Dictionary<string, string>();
                     data.Add("c_method", "new_campaign");
                     data.Add("c_date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
                     data.Add("c_record_audio", camp.Key);
-                    data.Add("c_phone", string.Join(",", camp.Select(i => i.MOBILE).Where(i => !string.IsNullOrEmpty(i))));
+                    data.Add("c_phone", string.Join(",", camp.Select(i => i.MOBILE).Where(i => !excludeList.Contains(i) && !string.IsNullOrEmpty(i))));
                     data.Add("c_callerID", ConfigurationManager.AppSettings["c_callerID"]);
                     data.Add("c_uid", ConfigurationManager.AppSettings["c_uid"]);
                     data.Add("c_password", ConfigurationManager.AppSettings["c_password"]);
@@ -80,7 +82,7 @@ namespace SlybroadcastCampaign
                     var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
                     if (!string.IsNullOrEmpty(resp))
                     {
-                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key,null,null);
+                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key, null, null);
                     }
                 }
             }
