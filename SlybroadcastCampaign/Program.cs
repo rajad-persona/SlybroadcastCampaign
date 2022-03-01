@@ -7,16 +7,15 @@ using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace SlybroadcastCampaign
 {
     class Program
     {
         private static readonly HttpClient client = new HttpClient();
-        private static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static void Main(string[] args)
         {
-            LogConfigure();
             if (args.Any() && args[0] == "1")
             {
                 GetSlyReposne();
@@ -26,8 +25,8 @@ namespace SlybroadcastCampaign
         }
         private static void GetSlyReposne()
         {
-            Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("SLY response Batch Job started");
+            LogHelper.Log("-------------------------------------------------------------");
+            LogHelper.Log("SLY response Batch Job started");
             try
             {
                 var dbHelper = new DBHelper();
@@ -51,48 +50,50 @@ namespace SlybroadcastCampaign
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in SLY batch job", ex);
+                LogHelper.Error(ex, "Error in SLY batch job");
             }
-            Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("SLY Batch Job ended");
+            LogHelper.Log("-------------------------------------------------------------");
+            LogHelper.Log("SLY Batch Job ended");
         }
         private static void RunCampaigns()
         {
-            Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("Campaign Batch Job started");
+            LogHelper.Log("-------------------------------------------------------------");
+            LogHelper.Log("Campaign Batch Job started");
             var dbHelper = new DBHelper();
-            var customer = dbHelper.GetCustomers();
-            if (customer != null && customer.Any())
+            try
             {
-                var campaigns = customer.GroupBy(i => i.Message);
-                var excludeList = ConfigurationManager.AppSettings["exclude_list"].Split(',');
-                foreach (var camp in campaigns)
+                var customer = dbHelper.GetCustomers();
+                if (customer != null && customer.Any())
                 {
-                    var data = new Dictionary<string, string>();
-                    data.Add("c_method", "new_campaign");
-                    data.Add("c_date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
-                    data.Add("c_record_audio", camp.Key);
-                    data.Add("c_phone", string.Join(",", camp.Select(i => i.MOBILE).Where(i => !excludeList.Contains(i) && !string.IsNullOrEmpty(i))));
-                    data.Add("c_callerID", ConfigurationManager.AppSettings["c_callerID"]);
-                    data.Add("c_uid", ConfigurationManager.AppSettings["c_uid"]);
-                    data.Add("c_password", ConfigurationManager.AppSettings["c_password"]);
-                    data.Add("mobile_only", ConfigurationManager.AppSettings["mobile_only"]);
-                    data.Add("c_title", camp.FirstOrDefault().Campaign_Name);
-
-                    var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
-                    if (!string.IsNullOrEmpty(resp))
+                    var campaigns = customer.GroupBy(i => i.Message);
+                    var excludeList = ConfigurationManager.AppSettings["exclude_list"].Split(',');
+                    foreach (var camp in campaigns)
                     {
-                        dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key, null, null);
+                        var data = new Dictionary<string, string>();
+                        data.Add("c_method", "new_campaign");
+                        data.Add("c_date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
+                        data.Add("c_record_audio", camp.Key);
+                        data.Add("c_phone", string.Join(",", camp.Select(i => i.MOBILE).Where(i => !excludeList.Contains(i) && !string.IsNullOrEmpty(i))));
+                        data.Add("c_callerID", ConfigurationManager.AppSettings["c_callerID"]);
+                        data.Add("c_uid", ConfigurationManager.AppSettings["c_uid"]);
+                        data.Add("c_password", ConfigurationManager.AppSettings["c_password"]);
+                        data.Add("mobile_only", ConfigurationManager.AppSettings["mobile_only"]);
+                        data.Add("c_title", camp.FirstOrDefault().Campaign_Name);
+
+                        var resp = SlyAPITrigger(data).GetAwaiter().GetResult();
+                        if (!string.IsNullOrEmpty(resp))
+                        {
+                            dbHelper.AddLog(resp, camp.FirstOrDefault().Campaign_Name, camp.Key, null, null);
+                        }
                     }
                 }
+                LogHelper.Log("-------------------------------------------------------------");
+                LogHelper.Log("Campaign Batch Job ended");
             }
-            Logger.InfoFormat("-------------------------------------------------------------");
-            Logger.InfoFormat("Campaign Batch Job ended");
-        }
-        internal static void LogConfigure()
-        {
-            log4net.Config.BasicConfigurator.Configure();
-            ILog log = log4net.LogManager.GetLogger(typeof(Program));
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "SLY Campaign Batch Error");
+            }
         }
         private static async Task<string> SlyAPITrigger(Dictionary<string, string> data)
         {
@@ -112,7 +113,7 @@ namespace SlybroadcastCampaign
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in SLY api call", ex);
+                LogHelper.Error(ex, "Error in SLY api call");
             }
             return null;
         }

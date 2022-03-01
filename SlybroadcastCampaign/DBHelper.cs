@@ -32,6 +32,7 @@ namespace SlybroadcastCampaign
             using (var cmd = new SqlCommand("USP_GET_SLYBROADCAST_CUSTOMERS_DETAILS", con))
             using (var da = new SqlDataAdapter(cmd))
             {
+                cmd.CommandTimeout = 500;
                 cmd.CommandType = CommandType.StoredProcedure;
                 da.Fill(table);
             }
@@ -59,6 +60,7 @@ namespace SlybroadcastCampaign
                 using (var cmd = new SqlCommand("[USP_GET_ATTENTIVE_CUSTOMERS_DETAILS]", con))
                 using (var da = new SqlDataAdapter(cmd))
                 {
+                    cmd.CommandTimeout = 500;
                     cmd.CommandType = CommandType.StoredProcedure;
                     da.Fill(table);
                 }
@@ -79,6 +81,7 @@ namespace SlybroadcastCampaign
                     con.Open();
                     using (var cmd = new SqlCommand("[USP_ADD_SLYBROADCAST_LOGS]", con))
                     {
+                        cmd.CommandTimeout = 500;
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@SLY_RESPONSE", SqlDbType.NVarChar));
                         cmd.Parameters["@SLY_RESPONSE"].Value = campaignResponse;
